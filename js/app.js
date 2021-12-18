@@ -1,8 +1,12 @@
 
-const items=document.getElementById('items')
+const cards=document.getElementById('cards')
+const items = document.getElementById('items')
+const footer = document.getElementById('footer')
 const templateCard = document.getElementById('template-card').content
+const templateFooter = document.getElementById('template-footer').content
+const templaCarrito = document.getElementById('template-carrito').content
 const fragmet = document.createDocumentFragment()
-
+let carrito ={}
 
 
 
@@ -12,7 +16,10 @@ const fragmet = document.createDocumentFragment()
 document.addEventListener('DOMContentLoaded',()=>{
     fetchData()
 })
-
+ 
+cards.addEventListener('click',(e)=>{
+   addCarrito(e)
+})
 
 
 
@@ -38,5 +45,51 @@ const pintarCards = data=>{
         const clone = templateCard.cloneNode(true)
         fragmet.appendChild(clone)
     })
+    cards.appendChild(fragmet)
+}
+
+const addCarrito = (e) =>{
+   // console.log(e.target)
+   // console.log(e.target.classList.contains('btn-dark'))
+   if(e.target.classList.contains('btn-dark')){
+    //console.log(e.target.parentElement)
+    setCarrito(e.target.parentElement)
+   }
+
+   e.stopPropagation()
+}
+
+const setCarrito = objeto =>{
+    const producto ={
+        id: objeto.querySelector('.btn-dark').dataset.id,
+        tite:objeto.querySelector('h5').textContent,
+        precio: objeto.querySelector('p').textContent,
+        cantidad:1
+    }
+
+    if(carrito.hasOwnProperty(producto.id)){
+        producto.cantidad = carrito[producto.id].cantidad + 1
+    }
+
+    carrito[producto.id] = {...producto}
+   // console.log(carrito)
+
+   pintarCarrito()
+}
+
+const pintarCarrito = () =>{
+    //console.log(carrito)
+    items.innerHTML=''
+    Object.values(carrito).forEach(producto => {
+        templaCarrito.querySelector('th').textContent = producto.id
+        templaCarrito.querySelectorAll('td')[0].textContent = producto.title
+        templaCarrito.querySelectorAll('td')[1].textContent = producto.cantidad
+        templaCarrito.querySelector('.btn-info').dataset.id = producto.id
+        templaCarrito.querySelector('.btn-danger').dataset.id = producto.id
+        templaCarrito.querySelector('span').textContent = producto.cantidad * producto.precio
+        const clone = templaCarrito.cloneNode(true)
+        fragmet.appendChild(clone)
+    })
+
     items.appendChild(fragmet)
 }
